@@ -30,7 +30,7 @@ export default defineConfig({
   },
   server: {
     host: '0.0.0.0',
-    allowedHosts: ['all'],
+    allowedHosts: ['all', '.replit.dev'],
     proxy: {
       '/api': 'http://localhost:5000' // point to your backend dev server
     },
