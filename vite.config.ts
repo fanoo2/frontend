@@ -29,6 +29,8 @@ export default defineConfig({
     emptyOutDir: true,
   },
   server: {
+    host: '0.0.0.0',
+    allowedHosts: ['all'],
     proxy: {
       '/api': 'http://localhost:5000' // point to your backend dev server
     },
