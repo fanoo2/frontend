@@ -31,7 +31,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': 'http://localhost:5000' // point to your backend dev server
-    }
+    },
     fs: {
       strict: true,
       deny: ["**/.*"],
