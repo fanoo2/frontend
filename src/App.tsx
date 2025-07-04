@@ -1,4 +1,5 @@
 import { Switch, Route } from "wouter";
+import { useEffect, useState } from "react";           // ← added
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -32,10 +33,26 @@ function Router() {
 }
 
 function App() {
+  // ← new health‐check state
+  const [healthMsg, setHealthMsg] = useState<string>("Checking backend…");
+
+  useEffect(() => {
+    fetch("/api/health")
+      .then((res) => res.text())
+      .then((text) => setHealthMsg(text))
+      .catch(() => setHealthMsg("Backend unreachable"));
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <Toaster />
+
+        {/* ─── Health Check Banner ─── */}
+        <div className="bg-white text-sm text-gray-700 p-2 border-b">
+          <strong>Backend:</strong> {healthMsg}
+        </div>
+
         <Router />
       </TooltipProvider>
     </QueryClientProvider>
