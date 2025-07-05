@@ -6,10 +6,14 @@
 
 const BASE_URL = process.env.BASE_URL || 'http://localhost:5000';
 
+// API constants for testing
+const API_ANNOTATE_SIMPLE = `${BASE_URL}/api/annotate-simple`;
+const API_ANNOTATE = `${BASE_URL}/api/annotate`;
+
 async function testSimpleAnnotate() {
   console.log('🔍 Testing simple annotation endpoint...');
   
-  const response = await fetch(`${BASE_URL}/api/annotate-simple`, {
+  const response = await fetch(API_ANNOTATE_SIMPLE, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -28,7 +32,7 @@ async function testSimpleAnnotate() {
 async function testAdvancedAnnotate() {
   console.log('🔍 Testing advanced annotation endpoint...');
   
-  const response = await fetch(`${BASE_URL}/api/annotate`, {
+  const response = await fetch(API_ANNOTATE, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

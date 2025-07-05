@@ -1,6 +1,6 @@
 import { DefaultApi, Configuration } from 'fanno-payments-workspace';
+import { apiClient } from './api';
 
 // Use centralized API configuration
-const API = import.meta.env.VITE_API_URL;
-const config = new Configuration({ basePath: `${API}/payments` });
+const config = new Configuration({ basePath: `${apiClient.baseURL}/payments` });
 export const paymentsApi = new DefaultApi(config);

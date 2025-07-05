@@ -6,7 +6,7 @@
 
 async function testAnnotationService() {
   const baseUrl = 'http://localhost:5000/api';
-  
+
   const testCases = [
     {
       name: "Technical Platform Text",
@@ -31,7 +31,7 @@ async function testAnnotationService() {
   for (const testCase of testCases) {
     console.log(`📋 Test: ${testCase.name}`);
     console.log(`Input: "${testCase.text}"`);
-    
+
     try {
       const response = await fetch(`${baseUrl}/annotate`, {
         method: 'POST',
@@ -54,14 +54,14 @@ async function testAnnotationService() {
     } catch (error) {
       console.log('❌ Network error:', error.message);
     }
-    
+
     console.log('');
   }
 
   // Test performance comparison
   console.log('⚡ Performance Test...\n');
   const perfText = "The agent workflow needs optimization for better performance and scalability in the cloud infrastructure.";
-  
+
   const startTime = Date.now();
   try {
     const response = await fetch(`${baseUrl}/annotate`, {
@@ -69,10 +69,10 @@ async function testAnnotationService() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ text: perfText })
     });
-    
+
     const endTime = Date.now();
     const result = await response.json();
-    
+
     console.log(`✅ Response time: ${endTime - startTime}ms`);
     console.log(`✅ Annotations received: ${result.annotations.length}`);
     console.log('Sample annotation:', result.annotations[0]);
@@ -87,3 +87,12 @@ if (require.main === module) {
 }
 
 module.exports = { testAnnotationService };
+const BASE_URL = process.env.BASE_URL || 'http://localhost:5000';
+
+// API constants for testing
+const API_ANNOTATE = `${BASE_URL}/api/annotate`;
+
+async function testOpenAIAnnotator() {
+  console.log('🤖 Testing OpenAI-powered annotation endpoint...');
+
+  const response = await fetch(API_ANNOTATE, {
