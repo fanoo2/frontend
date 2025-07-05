@@ -1,16 +1,36 @@
 
 const API = import.meta.env.VITE_API_URL;
 
+// Core endpoints (no `/api` prefix)
+export const HEALTH   = `${API}/health`;
+export const AGENTS   = `${API}/agents`;
+export const AGENT    = (id: number) => `${API}/agents/${id}`;
+export const ANNOTATE = `${API}/annotate`;
+
+// API prefixed routes
+export const API_HEALTH   = `${API}/api/health`;
+export const API_STATS    = `${API}/api/stats`;
+export const API_ANNOTATE = `${API}/api/annotate`;
+export const API_SIMPLE   = `${API}/api/annotate-simple`;
+export const API_ANNOTATIONS = `${API}/api/annotations`;
+export const API_PHASES      = `${API}/api/phases`;
+export const API_REPOS       = `${API}/api/repositories`;
+export const API_SERVICES    = `${API}/api/services`;
+export const API_ACTIVITIES  = (limit?: number) =>
+  `${API}/api/activities${limit ? `?limit=${limit}` : ''}`;
+export const API_WORKFLOWS   = `${API}/api/workflows`;
+
+// API functions using the centralized endpoints
 export function fetchAgents() {
-  return fetch(`${API}/agents`).then(res => res.json());
+  return fetch(AGENTS).then(res => res.json());
 }
 
 export function fetchHealth() {
-  return fetch(`${API}/api/health`).then(res => res.json());
+  return fetch(API_HEALTH).then(res => res.json());
 }
 
 export function annotateText(text: string) {
-  return fetch(`${API}/api/annotate`, {
+  return fetch(API_ANNOTATE, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -20,11 +40,11 @@ export function annotateText(text: string) {
 }
 
 export function getAgent(id: number) {
-  return fetch(`${API}/agents/${id}`).then(res => res.json());
+  return fetch(AGENT(id)).then(res => res.json());
 }
 
 export function updateAgent(id: number, data: any) {
-  return fetch(`${API}/agents/${id}`, {
+  return fetch(AGENT(id), {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
@@ -33,7 +53,46 @@ export function updateAgent(id: number, data: any) {
   }).then(res => res.json());
 }
 
-// Add more API functions as needed
+// Additional API functions for new endpoints
+export function fetchStats() {
+  return fetch(API_STATS).then(res => res.json());
+}
+
+export function fetchAnnotations(limit?: number) {
+  return fetch(`${API_ANNOTATIONS}${limit ? `?limit=${limit}` : ''}`).then(res => res.json());
+}
+
+export function fetchPhases() {
+  return fetch(API_PHASES).then(res => res.json());
+}
+
+export function fetchRepositories() {
+  return fetch(API_REPOS).then(res => res.json());
+}
+
+export function fetchServices() {
+  return fetch(API_SERVICES).then(res => res.json());
+}
+
+export function fetchActivities(limit?: number) {
+  return fetch(API_ACTIVITIES(limit)).then(res => res.json());
+}
+
+export function fetchWorkflows() {
+  return fetch(API_WORKFLOWS).then(res => res.json());
+}
+
+export function annotateSimple(text: string) {
+  return fetch(API_SIMPLE, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ text }),
+  }).then(res => res.json());
+}
+
+// Generic API client
 export const apiClient = {
   baseURL: API,
   fetch: (endpoint: string, options?: RequestInit) => {
