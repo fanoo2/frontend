@@ -16,9 +16,10 @@ publicDir = "dist"
 
 [[ports]]
 localPort = 5173
-externalPort = 5000
+externalPort = 80
 
 [workflows]
+runButton = "Frontend Dev Server"
 
 [[workflows.workflow]]
 name = "Backend Server"
@@ -28,3 +29,12 @@ mode = "sequential"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "npm run server"
+
+[[workflows.workflow]]
+name = "Frontend Dev Server"
+author = 9088213
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run dev"
