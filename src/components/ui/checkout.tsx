@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { paymentsApi } from '@/lib/payments';
 
-export function checkout() {
+export function Checkout() {
   const [loading, setLoading] = useState(false);
 
   const handleClick = async () => {
