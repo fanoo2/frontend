@@ -37,7 +37,7 @@ function App() {
   const [healthMsg, setHealthMsg] = useState<string>("Checking backend…");
 
   useEffect(() => {
-    const API = import.meta.env.VITE_API_URL;
+    const API = 'https://cba85d22-0bb8-47f4-a4de-4574f9cb66f6-00-3490tv5xpto83.janeway.replit.dev';
     fetch(`${API}/api/health`)
       .then((res) => res.json())
       .then((data) => setHealthMsg(`${data.status} @ ${new Date(data.timestamp).toLocaleTimeString()}`))
