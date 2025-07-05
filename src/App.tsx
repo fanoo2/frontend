@@ -37,10 +37,11 @@ function App() {
   const [healthMsg, setHealthMsg] = useState<string>("Checking backend…");
 
   useEffect(() => {
-     fetch("/api/health")
-       .then((res) => res.text())
-       .then((text) => setHealthMsg(text))
-       .catch(() => setHealthMsg("Backend unreachable"));
+    const API = import.meta.env.VITE_API_URL;
+    fetch(`${API}/api/health`)
+      .then((res) => res.json())
+      .then((data) => setHealthMsg(`${data.status} @ ${new Date(data.timestamp).toLocaleTimeString()}`))
+      .catch(() => setHealthMsg("Backend unreachable"));
   }, []);
 
   return (
