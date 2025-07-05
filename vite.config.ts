@@ -32,7 +32,11 @@ export default defineConfig({
     host: '0.0.0.0',
     allowedHosts: ['all', '.replit.dev'],
     proxy: {
-      '/api': 'http://localhost:5000' // point to your backend dev server
+      '/api': {
+        target: 'http://localhost:5000',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, ''),
+      },
     },
     fs: {
       strict: true,
