@@ -1,9 +1,10 @@
 import { Switch, Route } from "wouter";
-import { useEffect, useState } from "react";           // ← added
+import { useEffect, useState } from "react";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { HEALTH } from "@/lib/api";
 import Dashboard from "@/pages/dashboard";
 import Organization from "@/pages/organization";
 import AgentConfig from "@/pages/agent-config";
@@ -37,12 +38,10 @@ function App() {
   const [healthMsg, setHealthMsg] = useState<string>("Checking backend…");
 
   useEffect(() => {
-    import('@/lib/api').then(({ API_HEALTH }) => {
-      fetch(API_HEALTH)
-        .then((res) => res.json())
-        .then((data) => setHealthMsg(`${data.status} @ ${new Date(data.timestamp).toLocaleTimeString()}`))
-        .catch(() => setHealthMsg("Backend unreachable"));
-    });
+    fetch(HEALTH)
+      .then((res) => res.json())
+      .then((data) => setHealthMsg(`${data.status} @ ${new Date(data.timestamp).toLocaleTimeString()}`))
+      .catch(() => setHealthMsg("Backend unreachable"));
   }, []);
 
   return (

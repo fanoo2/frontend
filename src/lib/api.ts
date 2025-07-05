@@ -8,7 +8,6 @@ export const AGENT    = (id: number) => `${API}/agents/${id}`;
 export const ANNOTATE = `${API}/annotate`;
 
 // API prefixed routes
-export const API_HEALTH   = `${API}/api/health`;
 export const API_STATS    = `${API}/api/stats`;
 export const API_ANNOTATE = `${API}/api/annotate`;
 export const API_SIMPLE   = `${API}/api/annotate-simple`;
@@ -26,7 +25,7 @@ export function fetchAgents() {
 }
 
 export function fetchHealth() {
-  return fetch(API_HEALTH).then(res => res.json());
+  return fetch(HEALTH).then(res => res.json());
 }
 
 export function annotateText(text: string) {
