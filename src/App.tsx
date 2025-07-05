@@ -37,10 +37,10 @@ function App() {
   const [healthMsg, setHealthMsg] = useState<string>("Checking backend…");
 
   useEffect(() => {
-    fetch("/api/health")
-      .then((res) => res.text())
-      .then((text) => setHealthMsg(text))
-      .catch(() => setHealthMsg("Backend unreachable"));
+    // fetch("/api/health")
+    //   .then((res) => res.text())
+    //   .then((text) => setHealthMsg(text))
+    //   .catch(() => setHealthMsg("Backend unreachable"));
   }, []);
 
   return (
