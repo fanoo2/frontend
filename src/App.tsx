@@ -37,11 +37,16 @@ function App() {
   // ← new health‐check state
   const [healthMsg, setHealthMsg] = useState<string>("Checking backend…");
 
+  console.log('📡 HEALTH URL →', HEALTH);
+
   useEffect(() => {
     fetch(HEALTH)
       .then((res) => res.json())
       .then((data) => setHealthMsg(`${data.status} @ ${new Date(data.timestamp).toLocaleTimeString()}`))
-      .catch(() => setHealthMsg("Backend unreachable"));
+      .catch((err) => {
+        console.error('Fetch error:', err);
+        setHealthMsg('Backend unreachable');
+      });
   }, []);
 
   return (
