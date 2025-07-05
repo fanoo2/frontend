@@ -10,6 +10,10 @@
 
 const BASE_URL = process.env.BASE_URL || 'http://localhost:5000';
 
+// Import API constants (Note: This is a Node.js script, so we'll use the base URL pattern)
+const API_HEALTH = `${BASE_URL}/api/health`;
+const API_ANNOTATE = `${BASE_URL}/api/annotate`;
+
 async function makeRequest(url, options = {}) {
   try {
     const response = await fetch(url, options);
@@ -23,7 +27,7 @@ async function makeRequest(url, options = {}) {
 async function testHealthEndpoint() {
   console.log('🔍 Testing health endpoint...');
   
-  const result = await makeRequest(`${BASE_URL}/api/health`);
+  const result = await makeRequest(API_HEALTH);
   
   if (!result.success) {
     throw new Error(`Health check failed: ${result.error || result.status}`);
@@ -41,7 +45,7 @@ async function testAnnotateEndpoint() {
   console.log('🔍 Testing annotation endpoint...');
   
   const testText = "Hello world";
-  const result = await makeRequest(`${BASE_URL}/api/annotate`, {
+  const result = await makeRequest(API_ANNOTATE, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
