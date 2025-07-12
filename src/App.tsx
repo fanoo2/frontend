@@ -12,6 +12,7 @@ import AgentConfig from "@/pages/agent-config";
 import Workflows from "@/pages/workflows";
 import Monitoring from "@/pages/monitoring";
 import AnnotationLogs from "@/pages/annotation-logs";
+import Checkout from "@/pages/checkout";
 import NotFound from "@/pages/not-found";
 import Sidebar from "@/components/sidebar";
 
@@ -27,6 +28,7 @@ function Router() {
           <Route path="/workflows" component={Workflows} />
           <Route path="/monitoring" component={Monitoring} />
           <Route path="/annotation-logs" component={AnnotationLogs} />
+          <Route path="/checkout" component={Checkout} />
           <Route component={NotFound} />
         </Switch>
       </div>

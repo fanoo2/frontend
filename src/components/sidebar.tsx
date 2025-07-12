@@ -27,6 +27,7 @@ const navigation = [
       { name: "Workflows", href: "/workflows", icon: "🔄" },
       { name: "Monitoring", href: "/monitoring", icon: "📈" },
       { name: "Annotation Logs", href: "/annotation-logs", icon: "📝" },
+      { name: "Checkout", href: "/checkout", icon: "🛒" }, // Added checkout link
     ],
   },
 ];
