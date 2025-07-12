@@ -1,14 +1,25 @@
 
 declare module 'fanno-payments-workspace' {
+  export interface ConfigurationOptions {
+    basePath?: string;
+    [key: string]: any;
+  }
+
   export class Configuration {
-    constructor(options?: { basePath?: string; [key: string]: any });
+    constructor(options?: ConfigurationOptions);
+  }
+
+  export interface CreateCheckoutSessionParams {
+    amount: number;
+    currency: string;
+  }
+
+  export interface CreateCheckoutSessionResponse {
+    sessionId: string;
   }
 
   export class DefaultApi {
     constructor(configuration?: Configuration);
-    createCheckoutSession(params: {
-      amount: number;
-      currency: string;
-    }): Promise<{ sessionId: string }>;
+    createCheckoutSession(params: CreateCheckoutSessionParams): Promise<CreateCheckoutSessionResponse>;
   }
 }
