@@ -1,6 +1,15 @@
-import * as PaymentsWorkspace from 'fanno-payments-workspace';
 import { apiClient } from './api';
 
-// Use centralized API configuration - adjust based on updated package structure
-const config = new PaymentsWorkspace.Configuration({ basePath: `${apiClient.baseURL}/payments` });
-export const paymentsApi = new PaymentsWorkspace.DefaultApi(config);
+// Temporary implementation until fanno-payments-workspace exports are fixed
+export const paymentsApi = {
+  createCheckoutSession: async (params: { amount: number; currency: string }) => {
+    const response = await fetch(`${apiClient.baseURL}/payments/checkout`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(params),
+    });
+    return response.json();
+  }
+};
