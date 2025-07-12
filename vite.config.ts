@@ -29,6 +29,11 @@ export default defineConfig({
   build: {
     outDir: path.resolve(import.meta.dirname, "dist"),
     emptyOutDir: true,
+    rollupOptions: {
+      external: [
+        "livekit-server-sdk"
+      ],
+    },
   },
   server: {
     host: '0.0.0.0',
