@@ -15,7 +15,7 @@ import AnnotationLogs from "@/pages/annotation-logs";
 import Checkout from "@/pages/checkout";
 import NotFound from "@/pages/not-found";
 import Sidebar from "@/components/sidebar";
-import { createRoomClient } from "@fanno/webrtc-client/dist/client/RoomClient";
+import { createRoomClient } from "@fanno/webrtc-client";
 
 function Router() {
   return (
