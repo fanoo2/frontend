@@ -1,9 +1,8 @@
-import { apiClient } from './api';
-
 // Temporary implementation until fanno-payments-workspace exports are fixed
 export const paymentsApi = {
   createCheckoutSession: async (params: { amount: number; currency: string }) => {
-    const response = await fetch(`${apiClient.baseURL}/payments/create-session`, {
+    const API_URL = import.meta.env.VITE_API_URL;
+    const response = await fetch(`${API_URL}/payments/create-session`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

@@ -13,6 +13,10 @@ export default function CheckoutPage() {
     setError(null);
     
     try {
+      if (!import.meta.env.VITE_API_URL) {
+        throw new Error('VITE_API_URL environment variable is not set');
+      }
+      
       const { sessionId } = await paymentsApi.createCheckoutSession({
         amount: amount, // amount in cents
         currency: 'usd'
