@@ -45,4 +45,7 @@ export default defineConfig({
       deny: ["**/.*"],
     },
   },
+  optimizeDeps: {
+    exclude: ['fanno-payments-workspace']
+  },
 });
