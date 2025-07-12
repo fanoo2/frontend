@@ -4,6 +4,7 @@ import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { Button } from "@fanno/design-system";
 import { HEALTH } from "@/lib/api";
 import Dashboard from "@/pages/dashboard";
 import Organization from "@/pages/organization";
@@ -55,8 +56,13 @@ function App() {
         <Toaster />
 
         {/* ─── Health Check Banner ─── */}
-        <div className="bg-white text-sm text-gray-700 p-2 border-b">
-          <strong>Backend:</strong> {healthMsg}
+        <div className="bg-white text-sm text-gray-700 p-2 border-b flex items-center justify-between">
+          <div>
+            <strong>Backend:</strong> {healthMsg}
+          </div>
+          <Button onClick={() => alert("Hello from @fanno/design-system!")}>
+            Test Design System
+          </Button>
         </div>
 
         <Router />
