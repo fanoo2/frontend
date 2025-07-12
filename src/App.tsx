@@ -15,7 +15,7 @@ import AnnotationLogs from "@/pages/annotation-logs";
 import Checkout from "@/pages/checkout";
 import NotFound from "@/pages/not-found";
 import Sidebar from "@/components/sidebar";
-import { createRoomClient } from '@org/webrtc-client';
+import { createRoomClient } from '@fanno/webrtc-client';
 
 function Router() {
   return (
@@ -43,11 +43,11 @@ function App() {
   
   // WebRTC state
   const [room, setRoom] = useState<any>(null);
-  const [remoteParticipants, setRemoteParticipants] = useState<any[]>([]);
+  const [peers, setPeers] = useState<any[]>([]);
   const [isConnected, setIsConnected] = useState(false);
-  const [currentUser] = useState(`user-${Math.random().toString(36).substr(2, 9)}`);
+  const [currentUser] = useState(`guest_${Date.now()}`);
   
-  const API_BASE = import.meta.env.VITE_API_URL;
+  const API_URL = import.meta.env.VITE_API_URL;
 
   console.log('📡 HEALTH URL →', HEALTH);
 
@@ -63,53 +63,42 @@ function App() {
 
   // WebRTC setup and cleanup
   useEffect(() => {
-    if (room) {
-      const handleParticipantConnected = () => {
-        setRemoteParticipants(room.getRemoteParticipants());
-      };
-      
-      const handleTrackPublished = () => {
-        setRemoteParticipants(room.getRemoteParticipants());
-      };
+    async function joinRoom() {
+      try {
+        // 1) Fetch a token
+        const { token } = await fetch(`${API_URL}/api/token`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ identity: currentUser })
+        }).then(r => r.json());
 
-      room.on('participantConnected', handleParticipantConnected);
-      room.on('trackPublished', handleTrackPublished);
-      
-      return () => {
-        room.disconnect();
-        setIsConnected(false);
-      };
-    }
-  }, [room]);
+        // 2) Create & connect the client
+        const roomClient = createRoomClient();
+        await roomClient.connect(token);
 
-  const handleJoinRoom = async () => {
-    try {
-      // Fetch token from backend
-      const response = await fetch(`${API_BASE}/api/token`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ identity: currentUser })
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to fetch token');
+        // 3) Listen for events and update state
+        roomClient.on('participantConnected', () => setPeers(roomClient.getRemoteParticipants()));
+        roomClient.on('trackPublished', () => setPeers(roomClient.getRemoteParticipants()));
+
+        setRoom(roomClient);
+        setIsConnected(true);
+        setPeers(roomClient.getRemoteParticipants());
+
+        // 4) Cleanup on unmount
+        return () => { 
+          roomClient.disconnect(); 
+          setIsConnected(false);
+        };
+      } catch (error) {
+        console.error('Failed to join room:', error);
+        setHealthMsg('WebRTC connection failed');
       }
-      
-      const { token } = await response.json();
-      
-      // Create and connect room client
-      const roomClient = createRoomClient();
-      await roomClient.connect(token);
-      
-      setRoom(roomClient);
-      setIsConnected(true);
-      setRemoteParticipants(roomClient.getRemoteParticipants());
-      
-    } catch (error) {
-      console.error('Failed to join room:', error);
-      setHealthMsg('WebRTC connection failed');
     }
-  };
+    
+    joinRoom();
+  }, [currentUser, API_URL]);
+
+  
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -127,11 +116,10 @@ function App() {
               Test Design System
             </Button>
             <Button 
-              onClick={handleJoinRoom} 
-              disabled={isConnected}
+              disabled
               variant={isConnected ? "secondary" : "default"}
             >
-              {isConnected ? "Connected to Room" : "Join WebRTC Room"}
+              {isConnected ? "Connected to Room" : "Connecting..."}
             </Button>
           </div>
         </div>
@@ -156,7 +144,7 @@ function App() {
                 </div>
                 
                 {/* Remote Videos */}
-                {remoteParticipants.map(participant => (
+                {peers.map(participant => (
                   <div key={participant.sid} className="bg-black rounded-lg overflow-hidden">
                     <video
                       ref={el => room && el && participant.videoTrack && room.attachTrack(participant.videoTrack, el)}
@@ -170,7 +158,7 @@ function App() {
                 ))}
               </div>
               
-              {remoteParticipants.length === 0 && (
+              {peers.length === 0 && (
                 <p className="text-gray-600 mt-4">No other participants in the room yet.</p>
               )}
             </div>
