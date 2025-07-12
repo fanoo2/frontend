@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { paymentsApi } from '@/lib/payments';
+
 
 export default function CheckoutPage() {
   const [loading, setLoading] = useState(false);
@@ -17,12 +17,13 @@ export default function CheckoutPage() {
         throw new Error('VITE_API_URL environment variable is not set');
       }
       
-      const { sessionId } = await paymentsApi.createCheckoutSession({
-        amount: amount, // amount in cents
-        currency: 'usd'
+      const API = import.meta.env.VITE_API_URL;
+      const res = await fetch(`${API}/payments/create-session`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ amount: amount, currency: "usd" }),
       });
-      
-      // Redirect to Stripe Checkout
+      const { sessionId } = await res.json();
       window.location.href = `https://checkout.stripe.com/pay/${sessionId}`;
     } catch (err) {
       console.error('Checkout error:', err);

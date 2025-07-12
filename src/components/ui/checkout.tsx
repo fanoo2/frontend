@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { Button } from './button';
-import { paymentsApi } from '@/lib/payments';
+
 
 interface CheckoutProps {
   amount?: number;
@@ -24,12 +24,13 @@ export function Checkout({
     setError(null);
     
     try {
-      const { sessionId } = await paymentsApi.createCheckoutSession({
-        amount: amount,
-        currency: currency
+      const API = import.meta.env.VITE_API_URL;
+      const res = await fetch(`${API}/payments/create-session`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ amount: amount, currency: currency }),
       });
-      
-      // Redirect to Stripe Checkout
+      const { sessionId } = await res.json();
       window.location.href = `https://checkout.stripe.com/pay/${sessionId}`;
     } catch (err) {
       console.error('Checkout error:', err);
