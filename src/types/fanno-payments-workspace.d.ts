@@ -22,4 +22,8 @@ declare module 'fanno-payments-workspace' {
     constructor(configuration?: Configuration);
     createCheckoutSession(params: CreateCheckoutSessionParams): Promise<CreateCheckoutSessionResponse>;
   }
+
+  // Add namespace export for compatibility
+  export = PaymentsWorkspace;
+  export as namespace PaymentsWorkspace;
 }
