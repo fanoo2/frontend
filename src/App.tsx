@@ -64,14 +64,36 @@ function App() {
 
   // WebRTC setup and cleanup - temporarily disabled due to import issues
   useEffect(() => {
-    async function joinRoom() {
+    async function joinRoom(roomName: string = 'my-room', identity: string = currentUser) {
       try {
         console.log('🔄 Attempting to join WebRTC room...');
-        const { token, url } = await fetch('/api/livekit/token', {
+        
+        // 1️⃣ Hit your token endpoint
+        const resp = await fetch('/api/livekit/token', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ roomName: 'my-room' })
-        }).then(r => r.json());
+          body: JSON.stringify({ roomName, identity })
+        });
+
+        // 2️⃣ Make sure we got a 200
+        if (!resp.ok) {
+          const text = await resp.text();
+          throw new Error(`Token request failed (${resp.status}): ${text}`);
+        }
+
+        // 3️⃣ Try to parse JSON
+        let data;
+        try {
+          data = await resp.json();
+        } catch (parseError) {
+          const text = await resp.text();
+          throw new Error(`Invalid JSON response: ${text}`);
+        }
+
+        const { token, url } = data;
+        if (!token) {
+          throw new Error(`Token missing in response: ${JSON.stringify(data)}`);
+        }
 
         console.log('✅ Got WebRTC token and URL');
         console.log('🎯 Would connect to room with:', { token: 'present', url });
@@ -81,8 +103,10 @@ function App() {
         // await client.connect(token);
         // setRoom(client);
         // setIsConnected(true);
-      } catch (error) {
-        console.log('Failed to join room:', error);
+        
+      } catch (error: any) {
+        console.error('Failed to join room:', error);
+        setIsConnected(false);
       }
     }
 
