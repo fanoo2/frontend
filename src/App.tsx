@@ -15,7 +15,7 @@ import AnnotationLogs from "@/pages/annotation-logs";
 import Checkout from "@/pages/checkout";
 import NotFound from "@/pages/not-found";
 import Sidebar from "@/components/sidebar";
-import { createRoomClient } from "@fanno/webrtc-client";
+// import { createRoomClient } from '@fanno/webrtc-client'; // Temporarily disabled due to export issue
 
 function Router() {
   return (
@@ -40,13 +40,13 @@ function Router() {
 function App() {
   // ← health‐check state
   const [healthMsg, setHealthMsg] = useState<string>("Checking backend…");
-  
+
   // WebRTC state
   const [room, setRoom] = useState<any>(null);
   const [peers, setPeers] = useState<any[]>([]);
   const [isConnected, setIsConnected] = useState(false);
   const [currentUser] = useState(`guest_${Date.now()}`);
-  
+
   const API_URL = import.meta.env.VITE_API_URL;
 
   console.log('📡 HEALTH URL →', HEALTH);
@@ -66,39 +66,40 @@ function App() {
     async function joinRoom() {
       try {
         // 1) Fetch a token
-        const { token } = await fetch(`${API_URL}/api/token`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ identity: currentUser })
-        }).then(r => r.json());
+        // const { token } = await fetch(`${API_URL}/api/token`, {
+        //   method: 'POST',
+        //   headers: { 'Content-Type': 'application/json' },
+        //   body: JSON.stringify({ identity: currentUser })
+        // }).then(r => r.json());
 
         // 2) Create & connect the client
-        const roomClient = createRoomClient();
-        await roomClient.connect(token);
+        // const roomClient = createRoomClient();
+        // await roomClient.connect(token);
 
         // 3) Listen for events and update state
-        roomClient.on('participantConnected', () => setPeers(roomClient.getRemoteParticipants()));
-        roomClient.on('trackPublished', () => setPeers(roomClient.getRemoteParticipants()));
+        // roomClient.on('participantConnected', () => setPeers(roomClient.getRemoteParticipants()));
+        // roomClient.on('trackPublished', () => setPeers(roomClient.getRemoteParticipants()));
 
-        setRoom(roomClient);
-        setIsConnected(true);
-        setPeers(roomClient.getRemoteParticipants());
+        // setRoom(roomClient);
+        // setIsConnected(true);
+        // setPeers(roomClient.getRemoteParticipants());
 
         // 4) Cleanup on unmount
-        return () => { 
-          roomClient.disconnect(); 
-          setIsConnected(false);
-        };
+        // return () => { 
+        //   roomClient.disconnect(); 
+        //   setIsConnected(false);
+        // };
+        return () => {}
       } catch (error) {
         console.error('Failed to join room:', error);
         setHealthMsg('WebRTC connection failed');
       }
     }
-    
+
     joinRoom();
   }, [currentUser, API_URL]);
 
-  
+
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -132,32 +133,32 @@ function App() {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {/* Local Video */}
                 <div className="bg-black rounded-lg overflow-hidden">
-                  <video 
+                  {/* <video 
                     ref={el => room && el && room.attachLocalVideo(el)} 
                     autoPlay 
                     muted 
                     className="w-full h-48 object-cover"
-                  />
+                  /> */}
                   <div className="p-2 bg-white">
                     <span className="text-sm font-medium">You ({currentUser})</span>
                   </div>
                 </div>
-                
+
                 {/* Remote Videos */}
                 {peers.map(participant => (
                   <div key={participant.sid} className="bg-black rounded-lg overflow-hidden">
-                    <video
+                    {/* <video
                       ref={el => room && el && participant.videoTrack && room.attachTrack(participant.videoTrack, el)}
                       autoPlay
                       className="w-full h-48 object-cover"
-                    />
+                    /> */}
                     <div className="p-2 bg-white">
                       <span className="text-sm font-medium">{participant.identity}</span>
                     </div>
                   </div>
                 ))}
               </div>
-              
+
               {peers.length === 0 && (
                 <p className="text-gray-600 mt-4">No other participants in the room yet.</p>
               )}
