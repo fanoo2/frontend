@@ -15,8 +15,7 @@ import AnnotationLogs from "@/pages/annotation-logs";
 import Checkout from "@/pages/checkout";
 import NotFound from "@/pages/not-found";
 import Sidebar from "@/components/sidebar";
-// Remove the problematic import for now
-// import { createRoomClient, setLogLevel } from '@fanno/webrtc-client';
+import { createRoomClient, setLogLevel } from '@fanno/webrtc-client';
 
 function Router() {
   return (
@@ -65,41 +64,17 @@ function App() {
   // WebRTC setup and cleanup
   useEffect(() => {
     async function joinRoom() {
-      try {
-        console.log('🔄 Attempting to join WebRTC room...');
-        
-        // 1) Fetch a token using the LiveKit endpoint
-        const resp = await fetch(`${API_URL}/api/livekit/token`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ roomName: 'my-room', identity: currentUser })
-        });
-        
-        if (!resp.ok) {
-          throw new Error(`Failed to get token: ${resp.status}`);
-        }
-        
-        const { token, url } = await resp.json();
-        console.log('✅ Got WebRTC token and URL');
-        
-        // 2) For now, just log the connection details
-        // TODO: Implement actual room connection when WebRTC client is fixed
-        console.log('🎯 Would connect to room with:', { token: token ? 'present' : 'missing', url });
-        
-        setIsConnected(true);
-        setHealthMsg('WebRTC token received (connection pending)');ect(token);
+      const { token, url } = await fetch('/api/livekit/token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ roomName: 'my-room' })
+      }).then(r => r.json());
 
-        // 3) Cleanup on unmount
-        return () => { 
-          console.log('🧹 Cleaning up WebRTC connection');
-          setIsConnected(false);
-          setRoom(null);
-          setPeers([]);
-        };
-      } catch (error) {
-        console.error('Failed to join room:', error);
-        setHealthMsg('WebRTC connection failed');
-      }
+      console.log('🎯 Would connect to room with:', { token, url });
+      // now url is defined
+      const client = createRoomClient({ url });
+      await client.connect(token);
+      // …
     }
 
     joinRoom();
