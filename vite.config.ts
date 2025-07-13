@@ -48,4 +48,8 @@ export default defineConfig({
   optimizeDeps: {
     exclude: ['fanno-payments-workspace', '@fanno/webrtc-client', 'livekit-server-sdk']
   },
+  define: {
+    // This helps prevent server-only modules from being included in the client
+    'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development')
+  },
 });

@@ -15,7 +15,8 @@ import AnnotationLogs from "@/pages/annotation-logs";
 import Checkout from "@/pages/checkout";
 import NotFound from "@/pages/not-found";
 import Sidebar from "@/components/sidebar";
-import { createRoomClient, setLogLevel } from '@fanno/webrtc-client';
+// Remove the problematic import for now
+// import { createRoomClient, setLogLevel } from '@fanno/webrtc-client';
 
 function Router() {
   return (
@@ -61,20 +62,28 @@ function App() {
       });
   }, []);
 
-  // WebRTC setup and cleanup
+  // WebRTC setup and cleanup - temporarily disabled due to import issues
   useEffect(() => {
     async function joinRoom() {
-      const { token, url } = await fetch('/api/livekit/token', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ roomName: 'my-room' })
-      }).then(r => r.json());
+      try {
+        console.log('🔄 Attempting to join WebRTC room...');
+        const { token, url } = await fetch('/api/livekit/token', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ roomName: 'my-room' })
+        }).then(r => r.json());
 
-      console.log('🎯 Would connect to room with:', { token, url });
-      // now url is defined
-      const client = createRoomClient({ url });
-      await client.connect(token);
-      // …
+        console.log('✅ Got WebRTC token and URL');
+        console.log('🎯 Would connect to room with:', { token: 'present', url });
+        
+        // TODO: Re-enable when @fanno/webrtc-client export issues are resolved
+        // const client = createRoomClient({ url });
+        // await client.connect(token);
+        // setRoom(client);
+        // setIsConnected(true);
+      } catch (error) {
+        console.log('Failed to join room:', error);
+      }
     }
 
     joinRoom();
