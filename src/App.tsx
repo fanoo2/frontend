@@ -15,7 +15,7 @@ import AnnotationLogs from "@/pages/annotation-logs";
 import Checkout from "@/pages/checkout";
 import NotFound from "@/pages/not-found";
 import Sidebar from "@/components/sidebar";
-// import { createRoomClient } from '@fanno/webrtc-client'; // Temporarily disabled due to export issue
+import { createRoomClient, setLogLevel } from '@fanno/webrtc-client';
 
 function Router() {
   return (
@@ -65,31 +65,33 @@ function App() {
   useEffect(() => {
     async function joinRoom() {
       try {
+        // Set log level for debugging
+        setLogLevel('info');
+        
         // 1) Fetch a token
-        // const { token } = await fetch(`${API_URL}/api/token`, {
-        //   method: 'POST',
-        //   headers: { 'Content-Type': 'application/json' },
-        //   body: JSON.stringify({ identity: currentUser })
-        // }).then(r => r.json());
+        const { token } = await fetch(`${API_URL}/api/token`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ identity: currentUser })
+        }).then(r => r.json());
 
         // 2) Create & connect the client
-        // const roomClient = createRoomClient();
-        // await roomClient.connect(token);
+        const roomClient = createRoomClient();
+        await roomClient.connect(token);
 
         // 3) Listen for events and update state
-        // roomClient.on('participantConnected', () => setPeers(roomClient.getRemoteParticipants()));
-        // roomClient.on('trackPublished', () => setPeers(roomClient.getRemoteParticipants()));
+        roomClient.on('participantConnected', () => setPeers(roomClient.getRemoteParticipants()));
+        roomClient.on('trackPublished', () => setPeers(roomClient.getRemoteParticipants()));
 
-        // setRoom(roomClient);
-        // setIsConnected(true);
-        // setPeers(roomClient.getRemoteParticipants());
+        setRoom(roomClient);
+        setIsConnected(true);
+        setPeers(roomClient.getRemoteParticipants());
 
         // 4) Cleanup on unmount
-        // return () => { 
-        //   roomClient.disconnect(); 
-        //   setIsConnected(false);
-        // };
-        return () => {}
+        return () => { 
+          roomClient.disconnect(); 
+          setIsConnected(false);
+        };
       } catch (error) {
         console.error('Failed to join room:', error);
         setHealthMsg('WebRTC connection failed');
@@ -133,12 +135,12 @@ function App() {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {/* Local Video */}
                 <div className="bg-black rounded-lg overflow-hidden">
-                  {/* <video 
+                  <video 
                     ref={el => room && el && room.attachLocalVideo(el)} 
                     autoPlay 
                     muted 
                     className="w-full h-48 object-cover"
-                  /> */}
+                  />
                   <div className="p-2 bg-white">
                     <span className="text-sm font-medium">You ({currentUser})</span>
                   </div>
@@ -147,11 +149,11 @@ function App() {
                 {/* Remote Videos */}
                 {peers.map(participant => (
                   <div key={participant.sid} className="bg-black rounded-lg overflow-hidden">
-                    {/* <video
+                    <video
                       ref={el => room && el && participant.videoTrack && room.attachTrack(participant.videoTrack, el)}
                       autoPlay
                       className="w-full h-48 object-cover"
-                    /> */}
+                    />
                     <div className="p-2 bg-white">
                       <span className="text-sm font-medium">{participant.identity}</span>
                     </div>
