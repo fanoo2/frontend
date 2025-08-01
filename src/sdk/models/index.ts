@@ -1,5 +1,4 @@
 /* tslint:disable */
-/* eslint-disable */
 export * from './Activity';
 export * from './Agent';
 export * from './AgentUpdateRequest';
