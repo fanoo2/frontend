@@ -97,7 +97,7 @@ export default function Monitoring() {
                       <div>
                         <p className="font-medium text-gray-900">{service.name}</p>
                         <p className="text-xs text-gray-500">
-                          Last checked: {new Date(service.lastCheck).toLocaleString()}
+                          Last checked: {service.lastCheck ? new Date(service.lastCheck).toLocaleString() : 'Never'}
                         </p>
                       </div>
                     </div>
@@ -126,7 +126,7 @@ export default function Monitoring() {
                       <div>
                         <p className="font-medium text-gray-900">{agent.name}</p>
                         <p className="text-xs text-gray-500">
-                          {new Date(agent.lastUpdated).toLocaleString()}
+                          {agent.lastUpdated ? new Date(agent.lastUpdated).toLocaleString() : 'Never'}
                         </p>
                       </div>
                     </div>
@@ -153,7 +153,7 @@ export default function Monitoring() {
                       <div className="flex items-center justify-between">
                         <p className="font-medium text-gray-900">{activity.title}</p>
                         <span className="text-xs text-gray-500">
-                          {new Date(activity.timestamp).toLocaleString()}
+                          {activity.timestamp ? new Date(activity.timestamp).toLocaleString() : 'N/A'}
                         </span>
                       </div>
                       <span className={`text-xs px-2 py-1 rounded-full font-medium status-${activity.type} mt-1 inline-block`}>

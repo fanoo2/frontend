@@ -8,7 +8,7 @@ export default function CheckoutPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleBuy = async (amount: number, description: string) => {
+  const handleBuy = async (amount: number, _description: string) => {
     setLoading(true);
     setError(null);
     
