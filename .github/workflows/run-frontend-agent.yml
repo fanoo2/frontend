@@ -6,7 +6,13 @@ on:
     inputs:
       sdk_version:
         description: 'New payments SDK version'
-        required: true
+        required: false
+      design_system_version:
+        description: 'New design system version'
+        required: false
+      webrtc_client_version:
+        description: 'New WebRTC client version'
+        required: false
 
 jobs:
   scaffold:
@@ -24,9 +30,22 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Update payments SDK to ${{ github.event.inputs.sdk_version }}
+      - name: Update packages based on inputs
         run: |
-          npm install fanno-payments-workspace@${{ github.event.inputs.sdk_version }}
+          if [ -n "${{ github.event.inputs.sdk_version }}" ]; then
+            echo "Updating payments SDK to ${{ github.event.inputs.sdk_version }}"
+            npm install fanno-payments-workspace@${{ github.event.inputs.sdk_version }}
+          fi
+          
+          if [ -n "${{ github.event.inputs.design_system_version }}" ]; then
+            echo "Updating design system to ${{ github.event.inputs.design_system_version }}"
+            npm install @fanno/design-system@${{ github.event.inputs.design_system_version }}
+          fi
+          
+          if [ -n "${{ github.event.inputs.webrtc_client_version }}" ]; then
+            echo "Updating WebRTC client to ${{ github.event.inputs.webrtc_client_version }}"
+            npm install @fanno/webrtc-client@${{ github.event.inputs.webrtc_client_version }}
+          fi
 
       - name: Run AI-powered scaffold step
         run: npx locofy generate --config locofy.config.js
@@ -39,5 +58,18 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add .
-          git commit -m "chore: regenerate frontend with payments-sdk v${{ github.event.inputs.sdk_version }}" || echo "No changes to commit"
+          
+          # Create commit message based on what was updated
+          COMMIT_MSG="chore: update frontend dependencies"
+          if [ -n "${{ github.event.inputs.sdk_version }}" ]; then
+            COMMIT_MSG="$COMMIT_MSG - payments-sdk v${{ github.event.inputs.sdk_version }}"
+          fi
+          if [ -n "${{ github.event.inputs.design_system_version }}" ]; then
+            COMMIT_MSG="$COMMIT_MSG - design-system v${{ github.event.inputs.design_system_version }}"
+          fi
+          if [ -n "${{ github.event.inputs.webrtc_client_version }}" ]; then
+            COMMIT_MSG="$COMMIT_MSG - webrtc-client v${{ github.event.inputs.webrtc_client_version }}"
+          fi
+          
+          git commit -m "$COMMIT_MSG" || echo "No changes to commit"
           git push
