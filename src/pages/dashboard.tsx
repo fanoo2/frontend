@@ -204,7 +204,7 @@ export default function Dashboard() {
                   <div>
                     <p className="text-sm font-medium text-gray-900">{activity.title}</p>
                     <p className="text-xs text-gray-500">
-                      {new Date(activity.timestamp).toLocaleString()}
+                      {activity.timestamp ? new Date(activity.timestamp).toLocaleString() : 'N/A'}
                     </p>
                   </div>
                 </div>

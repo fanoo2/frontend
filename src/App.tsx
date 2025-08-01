@@ -43,8 +43,8 @@ function App() {
   const [healthMsg, setHealthMsg] = useState<string>("Checking backend…");
 
   // WebRTC state
-  const [room, setRoom] = useState<any>(null);
-  const [peers, setPeers] = useState<any[]>([]);
+  const [room, _setRoom] = useState<any>(null);
+  const [peers, _setPeers] = useState<any[]>([]);
   const [isConnected, setIsConnected] = useState(false);
   const [currentUser] = useState(`guest_${Date.now()}`);
 
@@ -85,7 +85,7 @@ function App() {
         let data;
         try {
           data = await resp.json();
-        } catch (parseError) {
+        } catch {
           const text = await resp.text();
           throw new Error(`Invalid JSON response: ${text}`);
         }
@@ -132,7 +132,7 @@ function App() {
             </Button>
             <Button 
               disabled
-              variant={isConnected ? "secondary" : "default"}
+              variant={isConnected ? "secondary" : "outline"}
             >
               {isConnected ? "Connected to Room" : "Connecting..."}
             </Button>
