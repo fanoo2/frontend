@@ -1,0 +1,27 @@
+name: Auto-trigger Frontend Agent
+
+on:
+  repository_dispatch:
+    types: [payments-sdk-update]
+
+jobs:
+  trigger-frontend-agent:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Trigger Frontend Agent Workflow
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const response = await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'run-frontend-agent.yml',
+              ref: 'main',
+              inputs: {
+                sdk_version: '${{ github.event.client_payload.sdk_version }}'
+              }
+            });
+            
+            console.log('Triggered run-frontend-agent.yml with SDK version:', '${{ github.event.client_payload.sdk_version }}');
