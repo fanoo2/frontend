@@ -2,26 +2,57 @@ name: Auto-trigger Frontend Agent
 
 on:
   repository_dispatch:
-    types: [payments-sdk-update]
+    types: [payments-sdk-update, design-system-update, webrtc-client-update]
 
 jobs:
   trigger-frontend-agent:
     runs-on: ubuntu-latest
     
     steps:
+      - name: Determine update type and version
+        id: update-info
+        run: |
+          EVENT_TYPE="${{ github.event.action }}"
+          case $EVENT_TYPE in
+            "payments-sdk-update")
+              echo "update_type=payments-sdk" >> $GITHUB_OUTPUT
+              echo "version=${{ github.event.client_payload.sdk_version }}" >> $GITHUB_OUTPUT
+              echo "input_name=sdk_version" >> $GITHUB_OUTPUT
+              ;;
+            "design-system-update")
+              echo "update_type=design-system" >> $GITHUB_OUTPUT
+              echo "version=${{ github.event.client_payload.design_system_version }}" >> $GITHUB_OUTPUT
+              echo "input_name=design_system_version" >> $GITHUB_OUTPUT
+              ;;
+            "webrtc-client-update")
+              echo "update_type=webrtc-client" >> $GITHUB_OUTPUT
+              echo "version=${{ github.event.client_payload.webrtc_client_version }}" >> $GITHUB_OUTPUT
+              echo "input_name=webrtc_client_version" >> $GITHUB_OUTPUT
+              ;;
+            *)
+              echo "Unknown event type: $EVENT_TYPE"
+              exit 1
+              ;;
+          esac
+
       - name: Trigger Frontend Agent Workflow
         uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
+            const updateType = '${{ steps.update-info.outputs.update_type }}';
+            const version = '${{ steps.update-info.outputs.version }}';
+            const inputName = '${{ steps.update-info.outputs.input_name }}';
+            
+            const inputs = {};
+            inputs[inputName] = version;
+            
             const response = await github.rest.actions.createWorkflowDispatch({
               owner: context.repo.owner,
               repo: context.repo.repo,
               workflow_id: 'run-frontend-agent.yml',
               ref: 'main',
-              inputs: {
-                sdk_version: '${{ github.event.client_payload.sdk_version }}'
-              }
+              inputs: inputs
             });
             
-            console.log('Triggered run-frontend-agent.yml with SDK version:', '${{ github.event.client_payload.sdk_version }}');
+            console.log(`Triggered run-frontend-agent.yml for ${updateType} update with version: ${version}`);
