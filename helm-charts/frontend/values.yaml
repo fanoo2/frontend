@@ -79,10 +79,15 @@ tolerations: []
 affinity: {}
 
 # Environment variables
-env: []
+env:
+  - name: NODE_ENV
+    value: "production"
 
 # ConfigMap data
-config: {}
+config:
+  VITE_API_URL: "http://api.fanno.io"
+  VITE_APP_NAME: "Fanno Frontend"
+  VITE_APP_VERSION: "1.0.0"
 
 # Health check configuration
 healthCheck:

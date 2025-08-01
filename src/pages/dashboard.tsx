@@ -51,18 +51,21 @@ export default function Dashboard() {
   return (
     <>
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 px-6 py-4">
+      <header className="bg-gradient-to-r from-primary to-primary/90 border-b shadow-lg px-6 py-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Platform Dashboard</h1>
-            <p className="text-sm text-gray-500">Automated AI-driven platform establishment</p>
+            <h1 className="text-3xl font-bold text-white">Platform Dashboard</h1>
+            <p className="text-primary-foreground/80 mt-1">Automated AI-driven platform establishment</p>
           </div>
           <div className="flex items-center space-x-4">
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-2 bg-white/10 backdrop-blur-sm rounded-lg px-3 py-2">
               <StatusIndicator status="healthy" />
-              <span className="text-sm text-gray-600">All systems operational</span>
+              <span className="text-white font-medium">All systems operational</span>
             </div>
-            <Button onClick={handleDeploy} className="bg-primary hover:bg-blue-600">
+            <Button 
+              onClick={handleDeploy} 
+              className="bg-white text-primary hover:bg-gray-100 font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
+            >
               Deploy Platform
             </Button>
           </div>
@@ -70,47 +73,47 @@ export default function Dashboard() {
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 overflow-y-auto p-6">
+      <main className="flex-1 overflow-y-auto p-6 bg-gray-50/30">
         {/* Platform Overview */}
         <div className="mb-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-            <Card>
+            <Card className="hover:shadow-lg transition-shadow duration-200 border-0 shadow-md">
               <CardContent className="p-6">
                 <div className="flex items-center">
-                  <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
-                    <span className="text-primary text-xl">🤖</span>
+                  <div className="w-14 h-14 bg-gradient-to-br from-primary to-primary/80 rounded-xl flex items-center justify-center shadow-lg">
+                    <span className="text-white text-2xl">🤖</span>
                   </div>
                   <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-600">Active Agents</p>
-                    <p className="text-2xl font-bold text-gray-900">{stats?.activeAgents || 0}</p>
+                    <p className="text-sm font-medium text-gray-600 mb-1">Active Agents</p>
+                    <p className="text-3xl font-bold text-gray-900">{stats?.activeAgents || 0}</p>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="hover:shadow-lg transition-shadow duration-200 border-0 shadow-md">
               <CardContent className="p-6">
                 <div className="flex items-center">
-                  <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                    <span className="text-green-600 text-xl">✅</span>
+                  <div className="w-14 h-14 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg">
+                    <span className="text-white text-2xl">✅</span>
                   </div>
                   <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-600">Completed Tasks</p>
-                    <p className="text-2xl font-bold text-gray-900">{stats?.completedTasks || 0}</p>
+                    <p className="text-sm font-medium text-gray-600 mb-1">Completed Tasks</p>
+                    <p className="text-3xl font-bold text-gray-900">{stats?.completedTasks || 0}</p>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="hover:shadow-lg transition-shadow duration-200 border-0 shadow-md">
               <CardContent className="p-6">
                 <div className="flex items-center">
-                  <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
-                    <span className="text-orange-600 text-xl">⏳</span>
+                  <div className="w-14 h-14 bg-gradient-to-br from-amber-500 to-amber-600 rounded-xl flex items-center justify-center shadow-lg">
+                    <span className="text-white text-2xl">⏳</span>
                   </div>
                   <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-600">Setup Progress</p>
-                    <p className="text-2xl font-bold text-gray-900">{stats?.progress || 0}%</p>
+                    <p className="text-sm font-medium text-gray-600 mb-1">Setup Progress</p>
+                    <p className="text-3xl font-bold text-gray-900">{stats?.progress || 0}%</p>
                   </div>
                 </div>
               </CardContent>
@@ -125,7 +128,10 @@ export default function Dashboard() {
 
         {/* Agent Configuration Grid */}
         <div className="mb-8">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">AI Agent Configuration</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+            <span className="w-2 h-8 bg-gradient-to-b from-primary to-primary/60 rounded-full mr-3"></span>
+            AI Agent Configuration
+          </h2>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {agents.map((agent) => (
               <AgentCard key={agent.id} agent={agent} />
@@ -135,82 +141,111 @@ export default function Dashboard() {
 
         {/* Hand-off Workflow Visualization */}
         <div className="mb-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+            <span className="w-2 h-8 bg-gradient-to-b from-emerald-500 to-emerald-600 rounded-full mr-3"></span>
+            Agent Hand-off Workflows
+          </h2>
           <WorkflowDiagram workflows={workflows} />
         </div>
 
         {/* AI Text Annotation Testing */}
         <div className="mb-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div>
-            <h3 className="text-lg font-semibold mb-4">Advanced Annotation Widget</h3>
-            <AnnotationWidget />
-          </div>
-          <div>
-            <h3 className="text-lg font-semibold mb-4">Simple Annotation Widget</h3>
-            <div className="bg-white rounded-lg border border-gray-200">
+          <Card className="hover:shadow-lg transition-shadow duration-200 border-0 shadow-md">
+            <CardContent className="p-6">
+              <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                <span className="w-2 h-6 bg-gradient-to-b from-violet-500 to-violet-600 rounded-full mr-3"></span>
+                Advanced Annotation Widget
+              </h3>
+              <AnnotationWidget />
+            </CardContent>
+          </Card>
+          <Card className="hover:shadow-lg transition-shadow duration-200 border-0 shadow-md">
+            <CardContent className="p-6">
+              <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                <span className="w-2 h-6 bg-gradient-to-b from-blue-500 to-blue-600 rounded-full mr-3"></span>
+                Simple Annotation Widget
+              </h3>
               <SimpleAnnotationWidget />
-            </div>
-          </div>
+            </CardContent>
+          </Card>
         </div>
 
         {/* GitHub Organization Status */}
         <div className="mb-8">
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-gray-900">GitHub Organization: @fanno</h2>
-              <span className="px-3 py-1 bg-green-600 text-white text-sm font-medium rounded-full">Active</span>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {repositories.map((repo) => (
-                <div key={repo.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-gray-700 rounded flex items-center justify-center">
-                      <span className="text-white text-xs">📦</span>
+          <Card className="hover:shadow-lg transition-shadow duration-200 border-0 shadow-md">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-bold text-gray-900 flex items-center">
+                  <span className="w-2 h-8 bg-gradient-to-b from-gray-700 to-gray-800 rounded-full mr-3"></span>
+                  GitHub Organization: @fanno
+                </h2>
+                <span className="px-4 py-2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white text-sm font-semibold rounded-full shadow-lg">
+                  Active
+                </span>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {repositories.map((repo) => (
+                  <div key={repo.id} className="flex items-center justify-between p-4 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl border border-gray-200 hover:shadow-md transition-shadow duration-200">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-10 h-10 bg-gradient-to-br from-gray-700 to-gray-800 rounded-lg flex items-center justify-center shadow-md">
+                        <span className="text-white text-sm">📦</span>
+                      </div>
+                      <div>
+                        <p className="font-semibold text-gray-900">{repo.name}</p>
+                        <p className="text-xs text-gray-500 font-medium">{repo.isPrivate ? "Private" : "Public"}</p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="font-medium text-gray-900">{repo.name}</p>
-                      <p className="text-xs text-gray-500">{repo.isPrivate ? "Private" : "Public"}</p>
-                    </div>
+                    <StatusIndicator status={repo.status} />
                   </div>
-                  <StatusIndicator status={repo.status} />
-                </div>
-              ))}
-            </div>
-          </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Service Monitoring */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Service Health</h3>
-            <div className="space-y-3">
-              {services.map((service) => (
-                <div key={service.id} className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-gray-900">{service.name}</span>
-                  <div className="flex items-center space-x-2">
-                    <StatusIndicator status={service.status} />
-                    <span className="text-sm text-gray-600 capitalize">{service.status}</span>
+          <Card className="hover:shadow-lg transition-shadow duration-200 border-0 shadow-md">
+            <CardContent className="p-6">
+              <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
+                <span className="w-2 h-6 bg-gradient-to-b from-cyan-500 to-cyan-600 rounded-full mr-3"></span>
+                Service Health
+              </h3>
+              <div className="space-y-4">
+                {services.map((service) => (
+                  <div key={service.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200">
+                    <span className="text-sm font-semibold text-gray-900">{service.name}</span>
+                    <div className="flex items-center space-x-3">
+                      <StatusIndicator status={service.status} />
+                      <span className="text-sm text-gray-600 capitalize font-medium">{service.status}</span>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
 
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h3>
-            <div className="space-y-3">
-              {activities.map((activity) => (
-                <div key={activity.id} className="flex items-start space-x-3">
-                  <StatusIndicator status={activity.type} className="mt-2" />
-                  <div>
-                    <p className="text-sm font-medium text-gray-900">{activity.title}</p>
-                    <p className="text-xs text-gray-500">
-                      {activity.timestamp ? new Date(activity.timestamp).toLocaleString() : 'N/A'}
-                    </p>
+          <Card className="hover:shadow-lg transition-shadow duration-200 border-0 shadow-md">
+            <CardContent className="p-6">
+              <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
+                <span className="w-2 h-6 bg-gradient-to-b from-purple-500 to-purple-600 rounded-full mr-3"></span>
+                Recent Activity
+              </h3>
+              <div className="space-y-4">
+                {activities.map((activity) => (
+                  <div key={activity.id} className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200">
+                    <StatusIndicator status={activity.type} className="mt-2" />
+                    <div>
+                      <p className="text-sm font-semibold text-gray-900">{activity.title}</p>
+                      <p className="text-xs text-gray-500 font-medium">
+                        {activity.timestamp ? new Date(activity.timestamp).toLocaleString() : 'N/A'}
+                      </p>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </main>
     </>

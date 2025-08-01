@@ -108,26 +108,26 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
-      - name: Deploy to staging (example with kubectl)
+      - name: Deploy with Helm
         run: |
-          echo "Deployment example:"
-          echo "Image built and pushed: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest"
-          echo ""
-          echo "To deploy with kubectl:"
-          echo "kubectl set image deployment/frontend-app frontend=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}"
-          echo ""
-          echo "To deploy with Helm:"
-          echo "helm upgrade frontend-staging ./helm-charts/frontend \\"
-          echo "  --set image.repository=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }} \\"
-          echo "  --set image.tag=${{ github.sha }} \\"
-          echo "  --namespace staging"
-          echo ""
-          echo "For Vercel deployment, add this step:"
-          echo "- uses: amondnet/vercel-action@v25"
-          echo "  with:"
-          echo "    vercel-token: \${{ secrets.VERCEL_TOKEN }}"
-          echo "    vercel-org-id: \${{ secrets.ORG_ID }}"
-          echo "    vercel-project-id: \${{ secrets.PROJECT_ID }}"
+          # Install Helm if not available
+          if ! command -v helm &> /dev/null; then
+            curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+          fi
+          
+          # Deploy to staging using Helm
+          helm upgrade --install frontend-staging ./helm-charts/frontend \
+            --set image.repository=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }} \
+            --set image.tag=${{ github.sha }} \
+            --set config.VITE_API_URL="${{ vars.VITE_API_URL || 'http://api.fanno.io' }}" \
+            --set config.VITE_APP_VERSION="${{ github.sha }}" \
+            --namespace staging \
+            --create-namespace \
+            --wait \
+            --timeout=300s
+          
+          echo "✅ Deployment completed successfully!"
+          echo "Image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}"
 
   deploy-vercel:
     runs-on: ubuntu-latest
