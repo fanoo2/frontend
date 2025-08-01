@@ -15,7 +15,43 @@ export default function AgentConfig() {
     queryKey: ["/api/agents"],
   });
 
-  const agent = agents.find(a => a.type === type);
+  // Mock agents for testing when backend is unreachable
+  const mockAgents: Agent[] = [
+    {
+      id: 1,
+      name: "WebRTC Agent",
+      type: "webrtc",
+      description: "Real-time communication and media streaming agent",
+      status: "configuring",
+      config: {
+        webhookUrl: "",
+        turnStunSecrets: "",
+        sfuClusterConfig: "",
+        jwtSecret: ""
+      },
+      emoji: "📡",
+      provider: "Fanno",
+      lastUpdated: new Date()
+    },
+    {
+      id: 2,
+      name: "Payment Agent",
+      type: "payment",
+      description: "Payment processing and webhook management agent",
+      status: "configuring",
+      config: {
+        stripeKeys: "",
+        webhookSecret: "",
+        currency: "USD",
+        payoutThreshold: 100
+      },
+      emoji: "💳",
+      provider: "Fanno",
+      lastUpdated: new Date()
+    }
+  ];
+
+  const agent = agents.find(a => a.type === type) || mockAgents.find(a => a.type === type);
 
   const updateAgentMutation = useMutation({
     mutationFn: async ({ id, config }: { id: number; config: any }) => {
@@ -124,6 +160,7 @@ function getConfigGuide(agentType: string) {
         <div>
           <h4 className="font-medium text-gray-900 mb-2">Setting up WebRTC Agent</h4>
           <ol className="list-decimal list-inside space-y-2">
+            <li>Configure the webhook URL for receiving WebRTC events and notifications</li>
             <li>Install LiveKit CLI or set up an Agora account</li>
             <li>Configure TURN/STUN server credentials</li>
             <li>Set up your SFU cluster configuration</li>

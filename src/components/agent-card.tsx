@@ -86,6 +86,15 @@ export default function AgentCard({ agent, onConfigChange }: AgentCardProps) {
         return (
           <div className="space-y-3">
             <div>
+              <Label className="text-sm font-medium text-gray-700">Webhook URL</Label>
+              <Input
+                type="url"
+                placeholder="https://example.com/webhook"
+                value={config.webhookUrl || ""}
+                onChange={(e) => onConfigChange?.({ ...config, webhookUrl: e.target.value })}
+              />
+            </div>
+            <div>
               <Label className="text-sm font-medium text-gray-700">TURN/STUN Secrets</Label>
               <Input
                 type="password"
