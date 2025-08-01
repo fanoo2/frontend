@@ -1,5 +1,17 @@
 
-const API = import.meta.env.VITE_API_URL;
+const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
+// Helper function for safe JSON parsing
+function safeJsonResponse(response: Response) {
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+  }
+  const contentType = response.headers.get('content-type');
+  if (!contentType || !contentType.includes('application/json')) {
+    throw new Error('Response is not JSON - likely received HTML error page');
+  }
+  return response.json();
+}
 
 // Core endpoints (no `/api` prefix)
 export const HEALTH   = `${API}/health`;
@@ -21,11 +33,11 @@ export const API_WORKFLOWS   = `${API}/api/workflows`;
 
 // API functions using the centralized endpoints
 export function fetchAgents() {
-  return fetch(AGENTS).then(res => res.json());
+  return fetch(AGENTS).then(safeJsonResponse);
 }
 
 export function fetchHealth() {
-  return fetch(HEALTH).then(res => res.json());
+  return fetch(HEALTH).then(safeJsonResponse);
 }
 
 export function annotateText(text: string) {

@@ -48,17 +48,27 @@ function App() {
   const [isConnected, setIsConnected] = useState(false);
   const [currentUser] = useState(`guest_${Date.now()}`);
 
-  const API_URL = import.meta.env.VITE_API_URL;
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
   console.log('📡 HEALTH URL →', HEALTH);
 
   useEffect(() => {
     fetch(HEALTH)
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+        }
+        // Check if response is JSON
+        const contentType = res.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+          throw new Error('Response is not JSON - likely received HTML error page');
+        }
+        return res.json();
+      })
       .then((data) => setHealthMsg(`${data.status} @ ${new Date(data.timestamp).toLocaleTimeString()}`))
       .catch((err) => {
         console.error('Fetch error:', err);
-        setHealthMsg('Backend unreachable');
+        setHealthMsg(`Backend unreachable: ${err.message}`);
       });
   }, []);
 
@@ -68,8 +78,11 @@ function App() {
       try {
         console.log('🔄 Attempting to join WebRTC room...');
         
-        // 1️⃣ Hit your token endpoint
-        const resp = await fetch('/api/livekit/token', {
+        // 1️⃣ Hit your token endpoint using the full API URL
+        const tokenUrl = `${API_URL}/api/livekit/token`;
+        console.log('🔗 Token endpoint:', tokenUrl);
+        
+        const resp = await fetch(tokenUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ roomName, identity })
@@ -81,13 +94,20 @@ function App() {
           throw new Error(`Token request failed (${resp.status}): ${text}`);
         }
 
-        // 3️⃣ Try to parse JSON
+        // 3️⃣ Check if response is JSON
+        const contentType = resp.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+          const text = await resp.text();
+          throw new Error(`Expected JSON response but got: ${text.substring(0, 100)}...`);
+        }
+
+        // 4️⃣ Try to parse JSON
         let data;
         try {
           data = await resp.json();
         } catch {
           const text = await resp.text();
-          throw new Error(`Invalid JSON response: ${text}`);
+          throw new Error(`Invalid JSON response: ${text.substring(0, 100)}...`);
         }
 
         const { token, url } = data;
