@@ -3,7 +3,7 @@ name: Deploy to Staging
 on:
   workflow_run:
     workflows: ["CI/CD"]
-    branches: [main]
+    branches: [main, develop]
     types: [completed]
 
 env:
