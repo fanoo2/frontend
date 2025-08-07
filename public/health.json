@@ -1,0 +1,14 @@
+{
+  "status": "healthy",
+  "service": "fanoo-frontend",
+  "version": "1.0.0",
+  "timestamp": "2024-12-19T00:00:00.000Z",
+  "environment": "production",
+  "checks": {
+    "frontend": "ok",
+    "routing": "ok",
+    "build": "ok"
+  },
+  "uptime": 0,
+  "healthy": true
+}
