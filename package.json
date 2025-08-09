@@ -3,6 +3,20 @@
   "version": "1.0.0",
   "type": "module",
   "license": "MIT",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "CHANGELOG.md"
+  ],
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -15,7 +29,9 @@
     "test:coverage": "jest --coverage",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
-    "test:e2e:skip": "echo 'E2E tests skipped - Playwright not available'"
+    "test:e2e:skip": "echo 'E2E tests skipped - Playwright not available'",
+    "test:smoke": "node tests/smoke/smoke-test.js",
+    "test:smoke:ci": "npm run test:smoke 2>&1 | tee smoke-test.log"
   },
   "dependencies": {
     "@eslint/js": "^9.30.1",
@@ -24,7 +40,7 @@
     "@hookform/resolvers": "^3.10.0",
     "@jridgewell/trace-mapping": "^0.3.29",
     "@neondatabase/serverless": "^0.10.4",
-    "@openapitools/openapi-generator-cli": "^2.21.4",
+    "@openapitools/openapi-generator-cli": "^0.0.6",
     "@radix-ui/react-accordion": "^1.2.11",
     "@radix-ui/react-alert-dialog": "^1.1.14",
     "@radix-ui/react-aspect-ratio": "^1.1.7",
@@ -121,7 +137,7 @@
     "@types/ws": "^8.18.1",
     "@vitejs/plugin-react": "^4.7.0",
     "autoprefixer": "^10.4.21",
-    "drizzle-kit": "^0.31.4",
+    "drizzle-kit": "^0.18.1",
     "esbuild": "^0.25.8",
     "jest": "^30.0.5",
     "jest-environment-jsdom": "^30.0.5",
@@ -130,7 +146,7 @@
     "ts-jest": "^29.4.0",
     "tsx": "^4.20.3",
     "typescript": "5.6.3",
-    "vite": "^5.4.19"
+    "vite": "^7.1.0"
   },
   "optionalDependencies": {
     "bufferutil": "^4.0.9"

@@ -2,7 +2,7 @@ export default {
   preset: 'ts-jest',
   testEnvironment: 'jsdom',
   setupFilesAfterEnv: ['<rootDir>/src/setupTests.ts'],
-  moduleNameMapping: {
+  moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
   },
   transform: {
@@ -11,6 +11,8 @@ export default {
       {
         tsconfig: {
           jsx: 'react-jsx',
+          module: 'ESNext',
+          target: 'ES2020',
         },
       },
     ],
@@ -24,6 +26,16 @@ export default {
     '!src/**/*.d.ts',
     '!src/main.tsx',
     '!src/vite-env.d.ts',
+    '!src/setupTests.ts',
+    '!src/sdk/**/*',  // Exclude generated SDK files
   ],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
+  globals: {
+    'import.meta': {
+      env: {
+        VITE_API_URL: 'http://localhost:5000'
+      }
+    }
+  },
+  extensionsToTreatAsEsm: ['.ts', '.tsx'],
 };

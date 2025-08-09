@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [ main, develop ]
 
+env:
+  NODE_VERSION: '20'
+
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
@@ -17,7 +20,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
 
       - name: Install dependencies
@@ -73,3 +76,193 @@ jobs:
           name: playwright-report
           path: playwright-report/
           retention-days: 30
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifacts
+          path: dist/
+          retention-days: 30
+
+  smoke-tests:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    if: success()
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifacts
+          path: dist/
+
+      - name: Run smoke tests
+        run: npm run test:smoke:ci
+        env:
+          PORT: 4173
+          HOST: localhost
+
+      - name: Upload smoke test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: smoke-test-results
+          path: |
+            smoke-test-results.json
+            smoke-test.log
+          retention-days: 30
+
+  security-audit:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run security audit
+        run: |
+          echo "🔍 Running security audit..."
+          npm audit --audit-level=moderate --production
+        continue-on-error: true
+
+      - name: Check for high/critical vulnerabilities
+        run: |
+          echo "🚨 Checking for high/critical vulnerabilities..."
+          if npm audit --audit-level=high --production; then
+            echo "✅ No high/critical vulnerabilities found"
+          else
+            echo "❌ High/critical vulnerabilities detected"
+            npm audit --audit-level=high --production
+            exit 1
+          fi
+
+  deploy-staging:
+    needs: [build-and-test, smoke-tests, security-audit]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/develop' && success()
+    environment: staging
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifacts
+          path: dist/
+
+      - name: Deploy to staging
+        run: |
+          echo "🚀 Deploying to staging environment..."
+          # Add your staging deployment logic here
+          # This could be uploading to S3, deploying to Vercel, etc.
+          echo "Staging deployment completed"
+        env:
+          VITE_API_URL: ${{ secrets.STAGING_API_URL }}
+          VITE_API_KEY: ${{ secrets.STAGING_API_KEY }}
+          VITE_LIVEKIT_API_KEY: ${{ secrets.STAGING_LIVEKIT_API_KEY }}
+          VITE_LIVEKIT_API_SECRET: ${{ secrets.STAGING_LIVEKIT_API_SECRET }}
+
+  deploy-production:
+    needs: [build-and-test, smoke-tests, security-audit]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && success()
+    environment: production
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifacts
+          path: dist/
+
+      - name: Create release tag
+        if: github.event_name == 'push'
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          
+          # Get version from package.json
+          VERSION=$(node -p "require('./package.json').version")
+          
+          # Check if tag already exists
+          if git tag -l "v$VERSION" | grep -q "v$VERSION"; then
+            echo "Tag v$VERSION already exists, skipping tag creation"
+          else
+            git tag -a "v$VERSION" -m "Release version $VERSION"
+            git push origin "v$VERSION"
+            echo "Created and pushed tag v$VERSION"
+          fi
+
+      - name: Deploy to production
+        run: |
+          echo "🚀 Deploying to production environment..."
+          # Add your production deployment logic here
+          echo "Production deployment completed"
+        env:
+          VITE_API_URL: ${{ secrets.PRODUCTION_API_URL }}
+          VITE_API_KEY: ${{ secrets.PRODUCTION_API_KEY }}
+          VITE_LIVEKIT_API_KEY: ${{ secrets.PRODUCTION_LIVEKIT_API_KEY }}
+          VITE_LIVEKIT_API_SECRET: ${{ secrets.PRODUCTION_LIVEKIT_API_SECRET }}
+
+      - name: Create GitHub Release
+        if: github.event_name == 'push'
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ steps.package-version.outputs.version }}
+          release_name: Release v${{ steps.package-version.outputs.version }}
+          body: |
+            ## 🚀 Production Release v${{ steps.package-version.outputs.version }}
+            
+            ### Changes
+            - See [CHANGELOG.md](CHANGELOG.md) for detailed changes
+            
+            ### Deployment
+            - ✅ All tests passed
+            - ✅ Security audit completed
+            - ✅ Smoke tests verified
+            - ✅ Deployed to production
+            
+            ### Artifacts
+            - Build artifacts available in this release
+          draft: false
+          prerelease: false

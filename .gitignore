@@ -133,3 +133,7 @@ dist
 /test-results/
 /playwright-report/
 /playwright/.cache/
+
+# Smoke test artifacts
+smoke-test-results.json
+smoke-test.log

@@ -13,6 +13,7 @@ import Workflows from "@/pages/workflows";
 import Monitoring from "@/pages/monitoring";
 import AnnotationLogs from "@/pages/annotation-logs";
 import Checkout from "@/pages/checkout";
+import Health from "@/pages/health";
 import NotFound from "@/pages/not-found";
 import Sidebar from "@/components/sidebar";
 // Remove the problematic import for now
@@ -25,6 +26,7 @@ function Router() {
       <div className="flex-1 flex flex-col overflow-hidden">
         <Switch>
           <Route path="/" component={Dashboard} />
+          <Route path="/health" component={Health} />
           <Route path="/organization" component={Organization} />
           <Route path="/agent/:type" component={AgentConfig} />
           <Route path="/workflows" component={Workflows} />

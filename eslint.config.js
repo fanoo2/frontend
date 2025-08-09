@@ -6,7 +6,7 @@ import tseslint from 'typescript-eslint'
 import react from 'eslint-plugin-react'
 
 export default tseslint.config(
-  { ignores: ['dist', 'node_modules', 'scripts/**/*', 'tailwind.config.ts'] },
+  { ignores: ['dist', 'node_modules', 'scripts/**/*', 'tailwind.config.ts', 'coverage/**/*'] },
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
     files: ['**/*.{ts,tsx}'],
